@@ -1,6 +1,6 @@
-meat;1
-milk;2
-eggs;3
-coca-cola;4
-pepsi;5
-beer;6
+meat;1;1.10
+milk;2;2.20
+eggs;3;3.30
+coca-cola;4;4.40
+pepsi;5;5.50
+beer;6;6.60

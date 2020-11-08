@@ -1,12 +1,6 @@
 require 'sqlite3'
 require 'pry'
 
-DB_NAME = "point_of_sale.db"
-IMPORT_PRODUCT_PATH = 'data/products.txt'
-DATABASE_SUBCLASS_PATH = 'point_of_sale/database/*.rb'
-
-KLASS_TABLE = ["Database::Product"]
-
 class Database
   attr_accessor :db
 
@@ -19,6 +13,8 @@ class Database
     create_database
     KLASS_TABLE.each do |klass_name|
       klass = Object.const_get(klass_name)
+      puts "Dropping table #{klass_name}"
+      drop_table(klass)
       puts "Creating tables for #{klass_name}"
       create_table(klass)
       puts "Empty the database values for #{klass_name}"
@@ -31,6 +27,10 @@ class Database
   private
   def create_database
     @db = Database.instance
+  end
+
+  def drop_table(klass)
+    klass.new.drop_table
   end
 
   def create_table(klass)
@@ -53,8 +53,20 @@ class Database::Base
     @db = Database.instance
   end
 
-  def create_table
-    puts "Not implemented for a class!!!"
+  def drop_table(klass)
+    raise "drop_table - Not implemented for a #{get_table_name}!!!"
+  end
+
+  def create_table(klass)
+    raise "create_table - Not implemented for a #{get_table_name}!!!"
+  end
+
+  def destroy_values(klass)
+    raise "destroy_values - Not implemented for a #{get_table_name}!!!"
+  end
+
+  def insert_values(klass)
+    raise "insert_values - Not implemented for a #{get_table_name}!!!"
   end
 
   def self.find_by(hash)
@@ -63,6 +75,10 @@ class Database::Base
     else
       raise StandardError.new "You should provide only one key to hash !!!"
     end
+  end
+
+  def self.get_random_row
+    Database.instance.execute "SELECT * FROM #{get_table_name} ORDER BY RANDOM() LIMIT 1"
   end
 
   private
@@ -75,11 +91,16 @@ class Database::Base
 end
 
 class Database::Product < Database::Base
+  def drop_table
+    db.execute "drop table if exists products;"
+  end
+
   def create_table
     db.execute <<-SQL
       create table if not exists products (
         name varchar(30),
-        barcode int
+        barcode int,
+        price number(10,2)
       );
     SQL
   end
@@ -88,7 +109,7 @@ class Database::Product < Database::Base
     File.open(IMPORT_PRODUCT_PATH, "r").read.split("\n").each do |product|
       values = product.split(";")    
       
-      db.execute "insert into products values ( ?, ? )", values
+      db.execute "insert into products values ( ?, ?, ? )", values
     end
   end
 
