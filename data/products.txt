@@ -1,0 +1,6 @@
+meat;1
+milk;2
+eggs;3
+coca-cola;4
+pepsi;5
+beer;6

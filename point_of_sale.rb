@@ -1,16 +1,10 @@
-class Scanner
-end
+Dir["./point_of_sale/*.rb"].each { |file| require file }
 
-class Printer
-end
-
-class Display
-end
-
-class App
+class PointOfSale
   def self.start
+    Database.new.prepare
     puts "start"
   end
 end
 
-App.start
+PointOfSale.start
