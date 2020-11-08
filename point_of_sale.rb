@@ -7,12 +7,16 @@ class PointOfSale
     repeat_console
   end
 
-  def repeat_console
-    while i==1 do
+  private
+  def self.repeat_console
+    choice = 0
+    while choice != 2 do
       puts "Press buttons below to:"
       puts "1. Scan product"
       puts "2. Exit"
+      choice = gets.to_i
     end
+    puts "Thank you for using our system. All yours scans are exported to file."
   end
 end
 
